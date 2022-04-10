@@ -6,7 +6,7 @@ concurrent: true
 dbMapping:
   database: canal
   table: user_info
-  targetTable: canal_dest.user_info
+  targetTable: user_info
   targetPk:
     id: id
   mapAll: true
