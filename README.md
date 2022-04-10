@@ -1,3 +1,47 @@
+canal源码环境搭建步骤：
+# 准备
+对于自建 MySQL , 需要先开启 Binlog 写入功能，配置 binlog-format 为 ROW 模式，my.cnf 中配置如下
+
+[mysqld]
+log-bin=mysql-bin # 开启 binlog
+binlog-format=ROW # 选择 ROW 模式
+server_id=1 # 配置 MySQL replaction 需要定义，不要和 canal 的 slaveId 重复
+注意：针对阿里云 RDS for MySQL , 默认打开了 binlog , 并且账号默认具有 binlog dump 权限 , 不需要任何权限或者 binlog 设置,可以直接跳过这一步
+授权 canal 链接 MySQL 账号具有作为 MySQL slave 的权限, 如果已有账户可直接 grant
+
+CREATE USER canal IDENTIFIED BY 'canal';  
+GRANT SELECT, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'canal'@'%';
+-- GRANT ALL PRIVILEGES ON *.* TO 'canal'@'%' ;
+FLUSH PRIVILEGES;
+
+# 启动
+## 1 修改E:\canal\deployer\src\main\resources\example\instance.properties配置文件下面的配置
+
+canal.instance.mysql.slaveId=123 #伪装成从库id
+
+canal.instance.master.address=x127.0.0.1:3306 #要监听的Mysql主库（可以远程监听，即canal服务器不跟mysql主库部署在同一台机器）
+
+canal.instance.dbUsername=canal #username/password（跟Mysql授权的用户一致）
+
+canal.instance.dbPassword=canal
+## 2 启动CanalLauncher
+
+# 同步源mysql库到目标mysql库
+1. 修改E:\canal\client-adapter\launcher\src\main\resources\application.yml
+2. 增加E:\canal\client-adapter\launcher\src\main\resources\rdb\mytest_user.yml配置文件
+3. 启动CanalAdapterApplication即可。
+
+# client example调试
+启动SimpleCanalClientTest
+
+# 部署admin客户端
+1. 执行脚本：E:\canal\admin\admin-web\src\main\resources\canal_manager.sql
+2. 修改mysql连接配置，安装Ebean Enhancement插件并重启，并右键admin-web项目开启
+3. 启动CanalAdminApplication
+
+
+
+
 [![build status](https://travis-ci.com/alibaba/canal.svg?branch=master)](https://travis-ci.com/alibaba/canal)
 [![codecov](https://codecov.io/gh/alibaba/canal/branch/master/graph/badge.svg)](https://codecov.io/gh/alibaba/canal)
 ![maven](https://img.shields.io/maven-central/v/com.alibaba.otter/canal.svg)
