@@ -1,3 +1,5 @@
+**注意**：经过初步测试，deployer服务挂了，那么binlog无法同步;deployer服务没挂，canalAdapterApplication挂了，那么重启后还是能同步之前的binlog。
+
 canal源码环境搭建步骤：
 # 准备
 对于自建 MySQL , 需要先开启 Binlog 写入功能，配置 binlog-format 为 ROW 模式，my.cnf 中配置如下
